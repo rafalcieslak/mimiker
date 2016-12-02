@@ -16,6 +16,7 @@ TESTS = \
 	syscall.elf \
 	thread.elf \
 	uiomove.elf \
+	vga.elf \
 	vm_map.elf
 SOURCES_C =
 SOURCES_ASM =
