@@ -4,6 +4,7 @@ TESTS = \
 	callout.elf \
 	crash.elf \
 	exec.elf \
+	exec_doom.elf \
 	exec_misbehave.elf \
 	exec_fd_test.elf \
 	malloc.elf \
@@ -31,7 +32,10 @@ SUBDIRS = mips stdc sys user
 LDLIBS += -Lsys -Lmips -Lstdc \
 	  -Wl,--start-group -lsys -lmips -lstdc -lgcc -Wl,--end-group
 # Files that need to be embedded alongside kernel image
-LD_EMBED = user/prog.uelf.o user/misbehave.uelf.o user/fd_test.uelf.o
+LD_EMBED = user/prog.uelf.o \
+	       user/misbehave.uelf.o \
+	       user/fd_test.uelf.o \
+	       user/headless_doom/headless_doom/benchmark.uelf.o
 
 # Files required to link kernel image
 KRT = stdc/libstdc.a mips/libmips.a sys/libsys.a $(LD_EMBED)

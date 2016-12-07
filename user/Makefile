@@ -3,6 +3,7 @@ all: prog.uelf.o
 include ../Makefile.common
 
 PROGRAMS_C = prog.c misbehave.c fd_test.c
+EXTRA_UELFS = headless_doom/headless_doom/benchmark.uelf
 SOURCES_ASM = syscalls.S start.S
 
 CFLAGS   = -std=gnu11 -O0 -Wall -Werror -fno-builtin -ffreestanding -mhard-float
@@ -13,8 +14,9 @@ SOURCES_OBJS = $(SOURCES_ASM:%.S=%.o)
 PROGRAMS_OBJS = $(PROGRAMS_C:%.c=%.o)
 PROGRAMS_UELFS = $(PROGRAMS_C:%.c=%.uelf)
 PROGRAMS_UELF_OS = $(PROGRAMS_C:%.c=%.uelf.o)
+EXTRA_UELF_OS = $(EXTRA_UELFS:%.uelf=%.uelf.o)
 
-all: $(PROGRAMS_UELF_OS) $(PROGRAMS_UELFS) start.o
+all: $(PROGRAMS_UELF_OS) $(EXTRA_UELF_OS) $(PROGRAMS_UELFS) start.o
 
 # Compiling the program source
 %.o: %.c
