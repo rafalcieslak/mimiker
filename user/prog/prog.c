@@ -50,12 +50,6 @@ void sbrk_test() {
 }
 
 int main(int argc, char **argv) {
-
-  int *p = malloc(6 * 1024 * 1024);
-  free(p);
-
-  return 0;
-
   /* TODO: Actually, the 0-th argument should be the program name. */
   if (argc < 1)
     abort();
@@ -70,9 +64,6 @@ int main(int argc, char **argv) {
   printf("Hello libc!\n");
 
   int *ptr = malloc(10 * sizeof(int));
-  free(ptr);
-
-  ptr = malloc(6 * 1024 * 1024);
   free(ptr);
 
   FILE *f = fopen("/etc/passwd", "rw");
