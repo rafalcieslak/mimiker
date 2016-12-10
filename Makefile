@@ -7,6 +7,7 @@ TESTS = \
 	exec_doom.elf \
 	exec_misbehave.elf \
 	exec_fd_test.elf \
+	linker_set.elf \
 	malloc.elf \
 	mutex.elf \
 	physmem.elf \
@@ -18,7 +19,7 @@ TESTS = \
 	thread.elf \
 	uiomove.elf \
 	vm_map.elf
-SOURCES_C =
+SOURCES_C = $(patsubst %.elf,%.c,$(TESTS))
 SOURCES_ASM =
 
 all: tags cscope $(TESTS)
@@ -32,10 +33,11 @@ SUBDIRS = mips stdc sys user
 LDLIBS += -Lsys -Lmips -Lstdc \
 	  -Wl,--start-group -lsys -lmips -lstdc -lgcc -Wl,--end-group
 # Files that need to be embedded alongside kernel image
-LD_EMBED = user/prog.uelf.o \
-	       user/misbehave.uelf.o \
-	       user/fd_test.uelf.o \
-	       user/headless_doom/headless_doom/benchmark.uelf.o
+LD_EMBED = \
+	user/prog/prog.uelf.o \
+	user/misbehave/misbehave.uelf.o \
+	user/fd_test/fd_test.uelf.o \
+	user/headless_doom/headless_doom/benchmark.uelf.o
 
 # Files required to link kernel image
 KRT = stdc/libstdc.a mips/libmips.a sys/libsys.a $(LD_EMBED)
@@ -57,7 +59,6 @@ format:
 	@echo "Formatting files: $(FORMATTABLE:./%=%)"
 	clang-format -style=file -i $(FORMATTABLE)
 
-
 define emit_subdir_rules
 # To make a directory, call make recursively
 $(1):
@@ -65,7 +66,7 @@ $(1):
 endef
 define emit_krt_rule
 # To make an embeddable file, you need to make its directory
-$(1): $(patsubst %/,%,$(dir $(1)))
+$(1): $(firstword $(subst /, ,$(dir $(1))))
 	# This target has to override the generic %.a rule from Makefile.common, so
 	# that it won't get invoked in this case. Otherwise we would try to build,
 	# say, "sys/libsys.a" from "sys" with ar.
@@ -73,14 +74,13 @@ $(1): $(patsubst %/,%,$(dir $(1)))
 endef
 define emit_test_rule
 # To build a test .elf, you require the corresponding .ko and all of $(KRT)
-$(1): $(1:%.elf=%.ko) $(KRT)
+$(1): $(1:%.elf=%.o) $(KRT)
 endef
 
 # Generate targets according to rules above
 $(foreach subdir, $(SUBDIRS), $(eval $(call emit_subdir_rules,$(subdir))))
 $(foreach file, $(KRT), $(eval $(call emit_krt_rule,$(file))))
 $(foreach test, $(TESTS), $(eval $(call emit_test_rule,$(test))))
-
 
 test:
 	for file in $(wildcard *.test); do		\
@@ -94,7 +94,7 @@ test:
 
 clean:
 	$(foreach DIR, $(SUBDIRS), $(MAKE) -C $(DIR) $@;)
-	$(RM) -f .*.D *.ko *.o *.a *.lst *~ *.elf *.map *.log
+	$(RM) -f .*.D *.o *.a *.lst *~ *.elf *.map *.log
 	$(RM) -f tags cscope.out *.taghl
 	$(RM) -f $(TESTS)
 
