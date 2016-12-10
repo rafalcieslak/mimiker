@@ -37,7 +37,7 @@ LD_EMBED = \
 	user/prog/prog.uelf.o \
 	user/misbehave/misbehave.uelf.o \
 	user/fd_test/fd_test.uelf.o \
-	user/headless_doom/headless_doom/benchmark.uelf.o
+	user/headless_doom/benchmark.uelf.o
 
 # Files required to link kernel image
 KRT = stdc/libstdc.a mips/libmips.a sys/libsys.a $(LD_EMBED)
