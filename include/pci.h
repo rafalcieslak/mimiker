@@ -56,5 +56,6 @@ typedef struct {
 } pci_bus_t;
 
 void pci_init();
+pci_device_t *pci_get_nth_device(int n);
 
 #endif /* _PCI_H_ */

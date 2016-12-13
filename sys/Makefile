@@ -23,6 +23,7 @@ SOURCES_C  = \
 	thread.c \
 	turnstile.c \
 	uio.c \
+	vga.c \
 	vfs.c \
 	vm_map.c \
 	vm_object.c \

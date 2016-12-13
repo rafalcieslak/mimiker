@@ -16,6 +16,7 @@ TESTS = \
 	thread.elf \
 	uiomove.elf \
 	vm_map.elf \
+	vga.elf \
 	vfs.elf
 SOURCES_C = $(patsubst %.elf,%.c,$(TESTS))
 SOURCES_ASM =
