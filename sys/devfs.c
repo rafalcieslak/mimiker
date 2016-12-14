@@ -60,6 +60,10 @@ int devfs_install(const char *name, vnode_t *device) {
   return 0;
 }
 
+static vfs_mount_t devfs_mount;
+static vfs_root_t devfs_root;
+static vfs_init_t devfs_init;
+
 static vnode_lookup_t devfs_root_lookup;
 static vnode_readdir_t devfs_root_readdir;
 
@@ -133,14 +137,9 @@ static int devfs_init(vfsconf_t *vfc) {
 }
 
 static vfsops_t devfs_vfsops = {
-  .vfs_mount = devfs_mount,
-  .vfs_root = devfs_root,
-  .vfs_init = devfs_init
-};
+  .vfs_mount = devfs_mount, .vfs_root = devfs_root, .vfs_init = devfs_init};
 
-static vfsconf_t devfs_conf = {
-  .vfc_name = "devfs",
-  .vfc_vfsops = &devfs_vfsops
-};
+static vfsconf_t devfs_conf = {.vfc_name = "devfs",
+                               .vfc_vfsops = &devfs_vfsops};
 
 SET_ENTRY(vfsconf, devfs_conf);

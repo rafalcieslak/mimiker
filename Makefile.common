@@ -44,11 +44,12 @@ LDLIBS += -L$(TOPDIR)/sys -L$(TOPDIR)/mips -L$(TOPDIR)/stdc \
       -Wl,--end-group
 
 # Files that need to be embedded alongside kernel image
-LD_EMBED = \
+LD_EMBED += \
 	$(TOPDIR)/user/prog/prog.uelf.o \
 	$(TOPDIR)/user/misbehave/misbehave.uelf.o \
 	$(TOPDIR)/user/headless_doom/benchmark.uelf.o \
-	$(TOPDIR)/user/fd_test/fd_test.uelf.o
+	$(TOPDIR)/user/fd_test/fd_test.uelf.o \
+    $(LD_EMBED_FILES)
 
 # Files required to link kernel image
 KRT = \
@@ -82,6 +83,10 @@ endef
 %.elf:	%.o $(KRT)
 	@echo "[LD] $(addprefix $(DIR),$<) -> $(DIR)$@"
 	$(CC) $(LDFLAGS) $< -Wl,-Map=$@.map $(LDLIBS) $(LD_EMBED) -o $@
+
+%.eo: %
+	@echo "[LD] $(DIR)$< -> $(DIR)$@"
+	$(OBJCOPY) -I binary --rename-section .data=.rodata,contents,readonly,data -O elf32-little --alt-machine-code=8 $< $@
 
 %.test: %.c
 	@echo "[HOSTCC] $(DIR)$< -> $(DIR)$@"

@@ -1,6 +1,7 @@
 TESTS = \
 	callout.elf \
 	crash.elf \
+	embedfs.elf \
 	exec.elf \
 	exec_doom.elf \
 	exec_fd_test.elf \
@@ -23,7 +24,10 @@ SOURCES_ASM =
 
 all: $(TESTS)
 
+LD_EMBED_FILES += embedfs.txt.eo
+
 include ../Makefile.common
 
+
 clean:
-	$(RM) -f .*.D *.o *.elf *.map *~
+	$(RM) -f .*.D *.o *.elf *.map *~ *.eo
