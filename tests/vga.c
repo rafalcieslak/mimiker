@@ -2,6 +2,9 @@
 #include <pci.h>
 #include <vga.h>
 #include <errno.h>
+#include <mount.h>
+#include <vnode.h>
+#include <vm_map.h>
 
 static void hue(uint8_t q, uint8_t *r, uint8_t *g, uint8_t *b) {
 #define CH(x, y, z)                                                            \
@@ -31,39 +34,62 @@ static void hue(uint8_t q, uint8_t *r, uint8_t *g, uint8_t *b) {
 }
 
 int main() {
-  vga_control_t vga_, *vga = &vga_;
+  uio_t uio;
+  iovec_t iov;
+  vnode_t *dev_vga_fb, *dev_vga_palette;
+  int error, frames = 1000;
 
-  /* Search for Cirrus Logic VGA adapter PCI device. */
-  for (int i = 0; i < pci_bus->ndevs; i++) {
-    int error = vga_control_pci_init(pci_bus->dev + i, vga);
-    if (error == 0)
-      goto found;
-  }
-  return ENOTSUP;
+  uint8_t palette_buffer[256 * 3];
+  uint8_t frame_buffer[320 * 200];
 
-found:
-  /* Now, VGA setup. */
-  vga_init(vga);
+  error = vfs_lookup("/dev/vga/fb", &dev_vga_fb);
+  assert(error == 0);
+  error = vfs_lookup("/dev/vga/palette", &dev_vga_palette);
+  assert(error == 0);
 
   /* Prepare palette */
-  uint8_t palette_buffer[256 * 3];
   for (int i = 0; i < 256; i++) {
     hue(i, palette_buffer + 3 * i + 0, palette_buffer + 3 * i + 1,
         palette_buffer + 3 * i + 2);
   }
-  vga_palette_write(vga, palette_buffer);
+
+  uio.uio_op = UIO_WRITE;
+  uio.uio_vmspace = get_kernel_vm_map();
+  uio.uio_offset = 0;
+  uio.uio_resid = 256 * 3;
+  uio.uio_iovcnt = 1;
+  uio.uio_iov = &iov;
+  iov.iov_base = palette_buffer;
+  iov.iov_len = 256 * 3;
+
+  error = VOP_WRITE(dev_vga_palette, &uio);
+  assert(error == 0);
+  assert(uio.uio_resid == 0);
 
   /* Framebuffer */
-  uint8_t frame_buffer[320 * 200];
 
   int off = 0;
-  int frames = 1000;
   while (frames--) {
     for (int i = 0; i < 320 * 200; i++)
       frame_buffer[i] = (i / 320 + off) % 256;
-    vga_fb_write_buffer(vga, frame_buffer);
+
+    uio.uio_op = UIO_WRITE;
+    uio.uio_vmspace = get_kernel_vm_map();
+    uio.uio_offset = 0;
+    uio.uio_resid = 320 * 200;
+    uio.uio_iovcnt = 1;
+    uio.uio_iov = &iov;
+    iov.iov_base = frame_buffer;
+    iov.iov_len = 320 * 200;
+
+    error = VOP_WRITE(dev_vga_fb, &uio);
+    assert(error == 0);
+    assert(uio.uio_resid == 0);
+
     off++;
   }
-  kprintf("OK.\n");
+
+  kprintf("Displayed 1000 frames.\n");
+
   return 0;
 }
