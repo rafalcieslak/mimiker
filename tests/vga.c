@@ -1,6 +1,7 @@
 #include <stdc.h>
 #include <pci.h>
 #include <vga.h>
+#include <errno.h>
 
 static void hue(uint8_t q, uint8_t *r, uint8_t *g, uint8_t *b) {
 #define CH(x, y, z)                                                            \
@@ -30,14 +31,17 @@ static void hue(uint8_t q, uint8_t *r, uint8_t *g, uint8_t *b) {
 }
 
 int main() {
-  /* Cirrus Logic VGA adapter PCI device. I hope it's the 5th device! */
-  pci_device_t *dev = pci_get_nth_device(5);
-
   vga_control_t vga_, *vga = &vga_;
-  int error = vga_control_pci_init(dev, vga);
-  if (error)
-    return error;
 
+  /* Search for Cirrus Logic VGA adapter PCI device. */
+  for (int i = 0; i < pci_bus->ndevs; i++) {
+    int error = vga_control_pci_init(pci_bus->dev + i, vga);
+    if (error == 0)
+      goto found;
+  }
+  return ENOTSUP;
+
+found:
   /* Now, VGA setup. */
   vga_init(vga);
 
@@ -57,7 +61,7 @@ int main() {
   while (frames--) {
     for (int i = 0; i < 320 * 200; i++)
       frame_buffer[i] = (i / 320 + off) % 256;
-    vga_fb_write(vga, frame_buffer);
+    vga_fb_write_buffer(vga, frame_buffer);
     off++;
   }
   kprintf("OK.\n");

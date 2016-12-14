@@ -3,6 +3,7 @@
 
 #include <vnode.h>
 #include <pci.h>
+#include <uio.h>
 
 typedef struct vga_control {
   uint32_t pci_memory;
@@ -37,8 +38,11 @@ void vga_palette_write_single(vga_control_t *vga, uint8_t offset, uint8_t r,
 void vga_palette_write(vga_control_t *vga, const uint8_t buf[3 * 256]);
 
 /* Write to vga frame buffer. buf must be of 320 * 200 size. */
-void vga_fb_write(vga_control_t *vga, const uint8_t buf[320 * 200])
+void vga_fb_write_buffer(vga_control_t *vga, const uint8_t buf[320 * 200])
   __attribute__((hot));
+
+/* uio write to frame buffer. */
+int vga_fb_write(vga_control_t *vga, uio_t *uio) __attribute__((hot));
 
 /* This function only supports resolutions up to 255, but this will do for
    now. */

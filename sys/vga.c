@@ -29,13 +29,15 @@
 int vga_control_pci_init(pci_device_t *pci, vga_control_t *vga) {
   /* Access the PCI command register of the device. Enable memory space. */
 
-  /* TODO: Ensure this is a cirrus device! */
+  bzero(vga, sizeof(vga_control_t));
+
   if (pci->vendor_id != VGA_CIRRUS_LOGIC_VENDOR_ID ||
       pci->device_id != VGA_CIRRUS_LOGIC_DEVICE_ID_GD5446) {
-    log("This vga driver only supports Cirrus Logic GD 5446 (0x%04x:0x%04x), "
+    /* log("This vga driver only supports Cirrus Logic GD 5446 (0x%04x:0x%04x),
+       "
         "while this is a 0x%04x:0x%04x",
         VGA_CIRRUS_LOGIC_VENDOR_ID, VGA_CIRRUS_LOGIC_DEVICE_ID_GD5446,
-        pci->vendor_id, pci->device_id);
+        pci->vendor_id, pci->device_id); */
     return ENOTSUP;
   }
 
@@ -48,8 +50,23 @@ int vga_control_pci_init(pci_device_t *pci, vga_control_t *vga) {
   status_command = status | command;
   PCI0_CFG_DATA_R = status_command;
 
-  /* TODO: Read data from PCI! */
-  vga->pci_memory = 0x10000000;
+  /* Search bars for VGA memory */
+  for (int i = 0; i < pci->nbars; i++) {
+    pci_bar_t *bar = pci->bar + i;
+    pm_addr_t addr = bar->addr;
+
+    if (addr & PCI_BAR_PREFETCHABLE) {
+      /* This looks like VGA memory area */
+      if (vga->pci_memory == 0)
+        vga->pci_memory = addr & ~PCI_BAR_MEMORY_MASK;
+    }
+  }
+
+  if (vga->pci_memory == 0) {
+    log("Failed to locate VGA memory address");
+    return ENOTSUP;
+  }
+
   vga->pci_io = 0x18000000;
 
   return 0;
@@ -106,11 +123,15 @@ void vga_set_resolution(vga_control_t *vga, int w, int h) {
   *VGA_CR_DATA(vga) = h - 1;
 }
 
-void vga_fb_write(vga_control_t *vga, const uint8_t buf[320 * 200]) {
+void vga_fb_write_buffer(vga_control_t *vga, const uint8_t buf[320 * 200]) {
   for (int i = 0; i < 320 * 200; i++) {
     volatile uint8_t *q = VGA_FB(vga, i);
     *q = buf[i];
   }
+}
+
+int vga_fb_write(vga_control_t *vga, uio_t *uio) {
+  return uiomove((char *)(VGA_FB(vga, 0)), 320 * 200, uio);
 }
 
 void vga_init(vga_control_t *vga) {
