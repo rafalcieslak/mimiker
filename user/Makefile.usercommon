@@ -10,7 +10,7 @@
 
 SOURCES_O = $(SOURCES_C:%.c=%.o)
 
-all: $(UELF_NAME).uelf.o
+all: $(UELF_NAME).uelf.o $(UELF_NAME).uelf
 
 clean:
 	rm -rf $(UELF_NAME).uelf.o $(SOURCES_C:%.c=.%.D) $(SOURCES_O)

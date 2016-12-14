@@ -49,6 +49,7 @@ LD_EMBED += \
 	$(TOPDIR)/user/misbehave/misbehave.uelf.o \
 	$(TOPDIR)/user/headless_doom/benchmark.uelf.o \
 	$(TOPDIR)/user/fd_test/fd_test.uelf.o \
+	$(TOPDIR)/user/vgatest/vgatest.uelf.o \
     $(LD_EMBED_FILES)
 
 # Files required to link kernel image

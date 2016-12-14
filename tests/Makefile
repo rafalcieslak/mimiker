@@ -6,6 +6,7 @@ TESTS = \
 	exec_doom.elf \
 	exec_fd_test.elf \
 	exec_misbehave.elf \
+	exec_vgatest.elf \
 	linker_set.elf \
 	malloc.elf \
 	mutex.elf \
@@ -18,6 +19,7 @@ TESTS = \
 	thread.elf \
 	uiomove.elf \
 	vm_map.elf \
+	vga.elf \
 	vfs.elf
 SOURCES_C = $(patsubst %.elf,%.c,$(TESTS))
 SOURCES_ASM =

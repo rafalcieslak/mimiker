@@ -1,22 +1,9 @@
 #include <stdc.h>
 #include <mips/mips.h>
 #include <mips/malta.h>
-#include <mips/gt64120.h>
+#include <mips/pci.h>
 #include <malloc.h>
 #include <pci.h>
-
-#define PCI0_CFG_ADDR_R GT_R(GT_PCI0_CFG_ADDR)
-#define PCI0_CFG_DATA_R GT_R(GT_PCI0_CFG_DATA)
-
-#define PCI0_CFG_REG_SHIFT 2
-#define PCI0_CFG_FUNCT_SHIFT 8
-#define PCI0_CFG_DEV_SHIFT 11
-#define PCI0_CFG_BUS_SHIFT 16
-#define PCI0_CFG_ENABLE 0x80000000
-
-#define PCI0_CFG_REG(dev, funct, reg)                                          \
-  (((dev) << PCI0_CFG_DEV_SHIFT) | ((funct) << PCI0_CFG_FUNCT_SHIFT) |         \
-   ((reg) << PCI0_CFG_REG_SHIFT))
 
 static MALLOC_DEFINE(mp, "PCI bus discovery memory pool");
 
@@ -129,7 +116,7 @@ static void pci_bus_assign_space(pci_bus_t *pcibus, intptr_t mem_base,
 
   pci_bar_t **bars = kmalloc(mp, sizeof(pci_bar_t *) * nbars, M_ZERO);
 
-  for (int j = 0, n = 0; j < pcibus->ndevs; j++)  {
+  for (int j = 0, n = 0; j < pcibus->ndevs; j++) {
     pci_device_t *pcidev = &pcibus->dev[j];
     for (int i = 0; i < pcidev->nbars; i++)
       bars[n++] = &pcidev->bar[i];
@@ -200,7 +187,7 @@ static void pci_bus_dump(pci_bus_t *pcibus) {
   }
 }
 
-static pci_bus_t pci_bus[1];
+pci_bus_t pci_bus[1];
 
 void pci_init() {
   vm_page_t *pg = pm_alloc(1);
