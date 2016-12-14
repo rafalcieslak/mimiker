@@ -45,7 +45,7 @@ static int dev_vga_lookup(vnode_t *dir, const char *name, vnode_t **res) {
 vnodeops_t dev_vga_framebuffer_vnodeops = {
   .v_lookup = vnode_op_notsup,
   .v_readdir = vnode_op_notsup,
-  .v_open = vnode_op_notsup,
+  .v_open = vnode_open_generic,
   .v_write = dev_vga_framebuffer_write,
   .v_read = vnode_op_notsup,
 };
@@ -53,7 +53,7 @@ vnodeops_t dev_vga_framebuffer_vnodeops = {
 vnodeops_t dev_vga_palette_vnodeops = {
   .v_lookup = vnode_op_notsup,
   .v_readdir = vnode_op_notsup,
-  .v_open = vnode_op_notsup,
+  .v_open = vnode_open_generic,
   .v_write = dev_vga_palette_write,
   .v_read = vnode_op_notsup,
 };

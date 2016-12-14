@@ -4,6 +4,7 @@ TESTS = \
 	exec.elf \
 	exec_misbehave.elf \
 	exec_fd_test.elf \
+	exec_vgatest.elf \
 	linker_set.elf \
 	malloc.elf \
 	mutex.elf \

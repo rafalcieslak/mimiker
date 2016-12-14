@@ -47,7 +47,8 @@ LDLIBS += -L$(TOPDIR)/sys -L$(TOPDIR)/mips -L$(TOPDIR)/stdc \
 LD_EMBED = \
 	$(TOPDIR)/user/prog/prog.uelf.o \
 	$(TOPDIR)/user/misbehave/misbehave.uelf.o \
-	$(TOPDIR)/user/fd_test/fd_test.uelf.o
+	$(TOPDIR)/user/fd_test/fd_test.uelf.o \
+	$(TOPDIR)/user/vgatest/vgatest.uelf.o
 
 # Files required to link kernel image
 KRT = \
