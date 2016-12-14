@@ -3,6 +3,7 @@
 SOURCES_C  = \
 	callout.c \
 	clock.c \
+	descrip.c \
 	dev_null.c \
 	dev_uart.c \
 	dev_vga.c \
@@ -26,6 +27,7 @@ SOURCES_C  = \
 	uio.c \
 	vga.c \
 	vfs.c \
+	vfs_syscalls.c \
 	vm_map.c \
 	vm_object.c \
 	vm_pager.c \

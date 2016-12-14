@@ -28,7 +28,7 @@ static int dev_uart_read(vnode_t *t, uio_t *uio) {
 vnodeops_t dev_uart_vnodeops = {
   .v_lookup = vnode_op_notsup,
   .v_readdir = vnode_op_notsup,
-  .v_open = vnode_op_notsup,
+  .v_open = vnode_open_generic,
   .v_write = dev_uart_write,
   .v_read = dev_uart_read,
 };

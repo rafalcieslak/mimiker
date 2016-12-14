@@ -6,6 +6,7 @@
 #include <pcpu.h>
 #include <sync.h>
 #include <sched.h>
+#include <filedesc.h>
 
 static MALLOC_DEFINE(td_pool, "kernel threads pool");
 
@@ -84,6 +85,9 @@ noreturn void thread_exit() {
 
   /* Thread must not exit while in critical section! */
   assert(td->td_csnest == 0);
+
+  if (td->td_fdt)
+    file_desc_table_destroy(td->td_fdt);
 
   critical_enter();
   td->td_state = TDS_INACTIVE;

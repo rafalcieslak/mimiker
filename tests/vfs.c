@@ -11,7 +11,7 @@ int main() {
   error = vfs_lookup("/dev/SPAM", &v);
   assert(error == ENOENT);
   error = vfs_lookup("/usr", &v);
-  assert(error == ENOENT);
+  assert(error == ENOENT); /* Root filesystem not implemented yet. */
   error = vfs_lookup("/", &v);
   assert(error == 0 && v == vfs_root_vnode);
   vnode_unref(v);
