@@ -12,19 +12,26 @@ static embedfs_file_list_t embedfs_file_list =
 
 static int embedfs_vnode_read(vnode_t *v, uio_t *uio) {
   embedfs_entry_t *fent = v->v_data;
-  int count = uio->uio_resid;
   int error = uiomove(fent->start, fent->size, uio);
   if (error < 0)
     return -error;
-  return count - uio->uio_resid;
+  return 0;
+}
+
+static int embedfs_vnode_getattr(vnode_t *v, vattr_t *vattr) {
+  embedfs_entry_t *fent = v->v_data;
+  bzero(vattr, sizeof(vattr_t));
+  vattr->st_size = fent->size;
+  return 0;
 }
 
 static vnodeops_t embedfs_vnode_ops = {
   .v_lookup = vnode_op_notsup,
   .v_readdir = vnode_op_notsup,
-  .v_open = vnode_op_notsup,
+  .v_open = vnode_open_generic,
   .v_read = embedfs_vnode_read,
   .v_write = vnode_op_notsup,
+  .v_getattr = embedfs_vnode_getattr,
 };
 
 static embedfs_entry_t *embedfs_get_by_name(const char *name) {

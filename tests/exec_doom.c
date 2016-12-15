@@ -1,5 +1,9 @@
 #include <common.h>
 #include <exec.h>
+#include <embedfs.h>
+
+EMBED_FILE("doom.wad", doom_wad);
+EMBED_FILE("DDQ-EP1.LMP", DDQ_EP1_LMP);
 
 int main() {
   exec_args_t exec_args;

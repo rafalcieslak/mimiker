@@ -30,6 +30,11 @@ LD_EMBED_FILES += embedfs.txt.eo
 
 include ../Makefile.common
 
+LD_EMBED_FILES += $(TOPDIR)/user/headless_doom/doom.wad.eo
+LD_EMBED_FILES += $(TOPDIR)/user/headless_doom/DDQ-EP1.LMP.eo
+LD_EMBED_FILES += $(TOPDIR)/user/headless_doom/DDQ-EP2.LMP.eo
+LD_EMBED_FILES += $(TOPDIR)/user/headless_doom/DDQ-EP3.LMP.eo
+LD_EMBED_FILES += $(TOPDIR)/user/headless_doom/DDQ-EP4.LMP.eo
 
 clean:
 	$(RM) -f .*.D *.o *.elf *.map *~ *.eo

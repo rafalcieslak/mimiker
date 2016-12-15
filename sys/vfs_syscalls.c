@@ -5,6 +5,7 @@
 #include <sysent.h>
 #include <systm.h>
 #include <stdc.h>
+#include <vnode.h>
 #include <vm_map.h>
 
 int do_open(thread_t *td, char *pathname, int flags, int mode, int *fd) {
@@ -54,6 +55,28 @@ int do_write(thread_t *td, int fd, uio_t *uio) {
   return res;
 }
 
+int do_lseek(thread_t *td, int fd, off_t offset, int whence) {
+  /* TODO: Whence! Now we assume whence == SEEK_SET */
+  /* TODO: RW file flag! For now we just file_get_read */
+  file_t *f;
+  int res = file_get_read(td, fd, &f);
+  if (res)
+    return res;
+  f->f_offset = offset;
+  file_drop(f);
+  return 0;
+}
+
+int do_fstat(thread_t *td, int fd, vattr_t *buf) {
+  file_t *f;
+  int res = file_get_read(td, fd, &f);
+  if (res)
+    return res;
+  res = f->f_ops->fo_getattr(f, td, buf);
+  file_drop(f);
+  return res;
+}
+
 /* == System calls interface === */
 
 int sys_open(thread_t *td, syscall_args_t *args) {
@@ -96,7 +119,7 @@ int sys_read(thread_t *td, syscall_args_t *args) {
 
   uio_t uio;
   iovec_t iov;
-  uio.uio_op = UIO_WRITE;
+  uio.uio_op = UIO_READ;
   uio.uio_vmspace = get_user_vm_map();
   iov.iov_base = ubuf;
   iov.iov_len = count;
@@ -133,4 +156,30 @@ int sys_write(thread_t *td, syscall_args_t *args) {
   if (error)
     return -error;
   return count - uio.uio_resid;
+}
+
+int sys_lseek(thread_t *td, syscall_args_t *args) {
+  int fd = args->args[0];
+  off_t offset = args->args[1];
+  int whence = args->args[2];
+
+  log("sys_lseek(%d, %ld, %d)", fd, offset, whence);
+
+  return -do_lseek(td, fd, offset, whence);
+}
+
+int sys_fstat(thread_t *td, syscall_args_t *args) {
+  int fd = args->args[0];
+  char *buf = (char *)args->args[1];
+
+  log("sys_fstat(%d, %p)", fd, buf);
+
+  vattr_t attr_buf;
+  int error = do_fstat(td, fd, &attr_buf);
+  if (error)
+    return error;
+  error = copyout(&attr_buf, buf, sizeof(vattr_t));
+  if (error < 0)
+    return error;
+  return 0;
 }

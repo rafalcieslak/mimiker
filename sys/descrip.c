@@ -126,6 +126,7 @@ file_t *file_alloc_noinstall() {
   f->f_ops = &badfileops;
   f->f_count = 1;
   f->f_data = 0;
+  f->f_offset = 0;
   mtx_init(&f->f_mtx);
   return f;
 }
@@ -281,7 +282,11 @@ static int badfo_write(file_t *f, struct thread *td, uio_t *uio) {
 static int badfo_close(file_t *f, struct thread *td) {
   return EBADF;
 }
+static int badfo_getattr(file_t *f, struct thread *td, vattr_t *buf) {
+  return EBADF;
+}
 
-fileops_t badfileops = {
-  .fo_read = badfo_read, .fo_write = badfo_write, .fo_close = badfo_close,
-};
+fileops_t badfileops = {.fo_read = badfo_read,
+                        .fo_write = badfo_write,
+                        .fo_close = badfo_close,
+                        .fo_getattr = badfo_getattr};

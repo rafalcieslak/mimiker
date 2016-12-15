@@ -183,7 +183,7 @@ int do_exec(const exec_args_t *args) {
    * when the stack underflows.
    */
   vm_addr_t stack_bottom = 0x70000000;
-  const size_t stack_size = PAGESIZE * 2;
+  const size_t stack_size = 0x00080000;
 
   vm_addr_t stack_start = stack_bottom - stack_size;
   vm_addr_t stack_end = stack_bottom;
@@ -203,9 +203,9 @@ int do_exec(const exec_args_t *args) {
   /* Before we have a working fork, let's initialize file descriptors required
      by the standard library. */
   int ignore;
-  do_open(td, "/dev/uart", 0, O_RDONLY, &ignore);
-  do_open(td, "/dev/uart", 0, O_WRONLY, &ignore);
-  do_open(td, "/dev/uart", 0, O_WRONLY, &ignore);
+  do_open(td, "/dev/uart", O_RDONLY, 0, &ignore);
+  do_open(td, "/dev/uart", O_WRONLY, 0, &ignore);
+  do_open(td, "/dev/uart", O_WRONLY, 0, &ignore);
 
   /* ... and user context. */
   uctx_init(thread_self(), eh->e_entry, stack_bottom);

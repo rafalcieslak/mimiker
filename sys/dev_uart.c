@@ -31,6 +31,7 @@ vnodeops_t dev_uart_vnodeops = {
   .v_open = vnode_open_generic,
   .v_write = dev_uart_write,
   .v_read = dev_uart_read,
+  .v_getattr = vnode_op_notsup,
 };
 
 void init_dev_uart() {

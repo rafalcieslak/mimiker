@@ -255,5 +255,5 @@ int vfs_open(file_t *f, char *pathname, int flags, int mode) {
   error = vfs_lookup(pathname, &v);
   if (error)
     return error;
-  return VOP_OPEN(v, mode, f);
+  return VOP_OPEN(v, flags, f);
 }

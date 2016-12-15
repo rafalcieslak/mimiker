@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
     sim_cmd, sim_opts = sim_choices[args.simulator]
     sim_cmd = [sim_cmd] + sim_opts(args)
-
+    
     if args.debug:
         dbg_cmd = shlex.split(DEBUGGERS[args.debugger] %
                               {'kernel': args.kernel, 'triplet': triplet})
@@ -169,9 +169,9 @@ if __name__ == '__main__':
     elif args.test:
         sim = popen_spawn.PopenSpawn(sim_cmd)
         if args.simulator == 'ovpsim':
-            sim.expect('Waiting for connection on port %d' % PORT, timeout=5)
+            sim.expect('Waiting for connection on port %d' % PORT, timeout=10)
         elif args.simulator == 'qemu':
-            sim.expect('QEMU .* monitor', timeout=5)
+            sim.expect('QEMU .* monitor', timeout=10)
         nc = subprocess.Popen(['nc', 'localhost', str(PORT)])
         while True:
             try:
