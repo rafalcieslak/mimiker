@@ -71,7 +71,7 @@ int main() {
   int off = 0;
   while (frames--) {
     for (int i = 0; i < 320 * 200; i++)
-      frame_buffer[i] = (i / 320 + off) % 256;
+      frame_buffer[i] = (i % 64) ? ((i / 320 + off) % 256) : (0);
 
     uio.uio_op = UIO_WRITE;
     uio.uio_vmspace = get_kernel_vm_map();
