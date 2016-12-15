@@ -160,6 +160,10 @@ void vga_init(vga_control_t *vga) {
   // Apply resolution
   vga_set_resolution(vga, 320, 200);
 
+  // Set 8 bits per pixel
+  /* This is not standard VGA, but a Cirrus extension. */
+  vga_sr_write(vga, 0x07, 0x01);
+
   // Set line offset register
   vga_cr_write(vga, 0x13, 320 / 8);
   // Set line compare register
