@@ -15,4 +15,6 @@ int copyout(const void *restrict kaddr, void *restrict udaddr, size_t len)
 int32_t fuword32(const void *ptr);
 int suword32(void *ptr, int32_t word);
 
+void qemu_request_exit(uint8_t val);
+
 #endif /* !_SYS_SYSTM_H_ */

@@ -1,6 +1,7 @@
 #include <ktest.h>
 #include <stdc.h>
 #include <sync.h>
+#include <systm.h>
 
 /* Borrowed from mips/malta.c */
 char *kenv_get(const char *key);
@@ -62,6 +63,7 @@ void ktest_failure() {
     kprintf("Failure while running single test.\n");
     kprintf("Failing test: %s\n", current_test->test_name);
   }
+  qemu_request_exit(42);
   panic("Halting kernel on failed test.\n");
 }
 
