@@ -175,6 +175,7 @@ user_exc_leave:
         LOAD_REG($v0, V0, $k0)
         LOAD_REG($at, AT, $k0)
 
+user_return:
         sync
         eret
 

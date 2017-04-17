@@ -39,7 +39,7 @@ static cpio_list_t initrd_head;
 static cpio_node_t *root_node;
 static vnodeops_t initrd_ops = {.v_lookup = vnode_op_notsup,
                                 .v_readdir = vnode_op_notsup,
-                                .v_open = vnode_op_notsup,
+                                .v_open = vnode_open_generic,
                                 .v_read = vnode_op_notsup,
                                 .v_write = vnode_op_notsup};
 
