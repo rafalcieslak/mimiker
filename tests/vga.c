@@ -1,5 +1,5 @@
+#include <ktest.h>
 #include <stdc.h>
-#include <pci.h>
 #include <vga.h>
 #include <errno.h>
 #include <mount.h>
@@ -33,7 +33,7 @@ static void hue(uint8_t q, uint8_t *r, uint8_t *g, uint8_t *b) {
   *fall = (42 - t) * 6;
 }
 
-int main() {
+static int test_vga() {
   uio_t uio;
   iovec_t iov;
   vnode_t *dev_vga_fb, *dev_vga_palette;
@@ -91,5 +91,7 @@ int main() {
 
   kprintf("Displayed 1000 frames.\n");
 
-  return 0;
+  return KTEST_SUCCESS;
 }
+
+KTEST_ADD(vga, test_vga, KTEST_FLAG_NORETURN);
