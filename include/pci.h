@@ -55,6 +55,7 @@ typedef struct {
   pci_device_t *dev;
 } pci_bus_t;
 
+extern pci_bus_t pci_bus[1];
 void pci_init();
 
 #endif /* _PCI_H_ */

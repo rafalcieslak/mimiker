@@ -37,6 +37,7 @@ def configure_ovpsim(args):
         'rtc/timefromhost': 1,
         'uartCBUS/console': 1,
         'uartCBUS/portnum': PORT,
+        'vga/scanDelay': 16000, # 16ms ~= 60FPS display refresh
         'command' : '"' + ' '.join(args.args) + '"'
     }
 
@@ -47,9 +48,7 @@ def configure_ovpsim(args):
     except OSError:
         pass
 
-    options = [
-               '--nographics',
-               '--wallclock',
+    options = ['--wallclock',
                '--kernel', args.kernel]
 
     if args.test or args.server:
@@ -69,7 +68,7 @@ def configure_ovpsim(args):
 
 
 def configure_qemu(args):
-    options = ['-nographic',
+    options = ['-vga', 'cirrus',
                '-nodefaults',
                '-machine', 'malta',
                '-cpu', '24Kf',

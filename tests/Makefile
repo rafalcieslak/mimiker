@@ -20,7 +20,8 @@ SOURCES_C = \
 	thread_exit.c \
 	uiomove.c \
 	vm_map.c \
-	vfs.c
+	vfs.c \
+	vga.c
 SOURCES_ASM =
 
 all: $(DEPFILES) initrd_test_files libtests.a
