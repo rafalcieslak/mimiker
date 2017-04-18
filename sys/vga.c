@@ -26,21 +26,25 @@
 #define VGA_CIRRUS_LOGIC_VENDOR_ID 0x1013
 #define VGA_CIRRUS_LOGIC_DEVICE_ID_GD5446 0x00b8
 
+/* It feels like they picked these numbers at random. */
+#define QEMU_STD_VGA_VENDOR_ID 0x1234
+#define QEMU_STD_VGA_DEVICE_ID 0x1111
+
 int vga_control_pci_init(pci_device_t *pci, vga_control_t *vga) {
   /* Access the PCI command register of the device. Enable memory space. */
 
   bzero(vga, sizeof(vga_control_t));
 
-  if (pci->vendor_id != VGA_CIRRUS_LOGIC_VENDOR_ID ||
-      pci->device_id != VGA_CIRRUS_LOGIC_DEVICE_ID_GD5446) {
-    /* log("This vga driver only supports Cirrus Logic GD 5446 (0x%04x:0x%04x),
-       "
-        "while this is a 0x%04x:0x%04x",
-        VGA_CIRRUS_LOGIC_VENDOR_ID, VGA_CIRRUS_LOGIC_DEVICE_ID_GD5446,
-        pci->vendor_id, pci->device_id); */
-    return ENOTSUP;
-  }
+  if (pci->vendor_id == VGA_CIRRUS_LOGIC_VENDOR_ID &&
+      pci->device_id == VGA_CIRRUS_LOGIC_DEVICE_ID_GD5446)
+    goto match;
+  if (pci->vendor_id == QEMU_STD_VGA_VENDOR_ID &&
+      pci->device_id == QEMU_STD_VGA_DEVICE_ID)
+    goto match;
 
+  return ENOTSUP;
+
+match:
   PCI0_CFG_ADDR_R =
     PCI0_CFG_ENABLE | PCI0_CFG_REG(pci->addr.device, pci->addr.function, 1);
   uint32_t status_command = PCI0_CFG_DATA_R;

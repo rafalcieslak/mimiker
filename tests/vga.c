@@ -33,14 +33,14 @@ static void hue(uint8_t q, uint8_t *r, uint8_t *g, uint8_t *b) {
   *fall = (42 - t) * 6;
 }
 
+static uint8_t palette_buffer[256 * 3];
+static uint8_t frame_buffer[320 * 200];
+
 static int test_vga() {
   uio_t uio;
   iovec_t iov;
   vnode_t *dev_vga_fb, *dev_vga_palette;
   int error, frames = 1000;
-
-  uint8_t palette_buffer[256 * 3];
-  uint8_t frame_buffer[320 * 200];
 
   error = vfs_lookup("/dev/vga/fb", &dev_vga_fb);
   assert(error == 0);
